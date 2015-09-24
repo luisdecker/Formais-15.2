@@ -685,5 +685,14 @@ public class Automato implements Serializable {
 		Automato b = other.interseccao(this.obterComplemento()).obterAutomatoMinimo();
 		return a.estados.size() == b.estados.size();
 	}
+	
+	public Gramatica transformaEmGramatica(){
+		
+		/**
+		 * A fazer.................
+		 * */
+		
+		return null;
+	}
 
 }
