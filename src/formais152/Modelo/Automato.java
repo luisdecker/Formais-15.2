@@ -811,5 +811,9 @@ public class Automato implements Serializable {
 		}
 		
 	}
+	public Automato concatenacao(Automato A){
+		//TODO
+		return null;
+	}
 
 }
