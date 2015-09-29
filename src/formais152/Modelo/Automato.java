@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 
-import formais152.Modelo.Excecoes.AutomatoFinitoNaoDeterministicoException;
+import formais152.Modelo.Excecoes.EpsilonTransicaoException;
 
 public class Automato implements Serializable {
 
@@ -727,7 +727,7 @@ public class Automato implements Serializable {
 
 	public Gramatica transformaEmGramatica() {
 
-		if(isDeterministico()){
+		if(!possuiEpsilonTransicao()){
 			Gramatica gr = new Gramatica();
 			
 			GeraSimbolosGramatica geraSimbolo = new GeraSimbolosGramatica();		
@@ -776,7 +776,7 @@ public class Automato implements Serializable {
 			
 			return gr;
 		}
-		throw new AutomatoFinitoNaoDeterministicoException("Você deve determinizar o autômato antes de transformar em gramática");
+		throw new EpsilonTransicaoException("Você deve retirar as transições por epsilon do autômato antes de transformar em gramática");
 		
 	}
 	

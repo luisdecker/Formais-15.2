@@ -22,7 +22,7 @@ public class main {
 
 		Automato aut = new Automato();
 		
-		/**testes rápidos que eu fiz, vou passar pro JUnit, pode ser apagado*/
+		/**testes rápidos que eu fiz, vou passar pro JUnit, pode ser apagado																																																																																																																						*/
 		
 
 		aut.addEstado("S");
@@ -51,15 +51,34 @@ public class main {
 		
 		Gramatica gr2 = aut.transformaEmGramatica();
 		gr2.retiraSimboloInicialDasProducoesADireita();
-		System.out.println(gr2);
+//		System.out.println(gr2);
+		
+		System.out.println("\n");
 		
 		Gramatica gr = new Gramatica();
 		
-		gr.adicionaProducao("S", "aA");
+		gr.adicionaProducao("*S", "aA");
+		gr.adicionaProducao("S", "bB");
 		gr.adicionaProducao("S", "&");
 		gr.adicionaProducao("A", "aS");
+		gr.adicionaProducao("A", "bC");
 		gr.adicionaProducao("A", "a");
+		gr.adicionaProducao("A", "b");
+		gr.adicionaProducao("B", "bS");
+		gr.adicionaProducao("B", "aC");
+		gr.adicionaProducao("B", "a");
+		gr.adicionaProducao("B", "b");
+		gr.adicionaProducao("C", "aB");
+		gr.adicionaProducao("C", "bA");
+		
+		
 		gr.retiraSimboloInicialDasProducoesADireita();
+		
+		Automato aut2 = gr.transformaEmAutomato();
+		
+		
+		
+		System.out.println(aut2);
 		
 //		System.out.println(gr);
 //		

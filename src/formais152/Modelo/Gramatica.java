@@ -21,86 +21,100 @@ public class Gramatica {
 	private HashSet<String> simbolosTerminais;
 	private HashSet<String> simbolosNaoTerminais;
 	private String simboloInicial;
-	
-	public Gramatica(){
+
+	public Gramatica() {
 		producoes = new HashMap<String, HashSet<String>>();
 		simbolosNaoTerminais = new HashSet<String>();
 		simbolosTerminais = new HashSet<String>();
 	}
-	
-	public String getSimboloInicial(){
+
+	public String getSimboloInicial() {
 		return simboloInicial;
 	}
 
 	public void setSimboloInicial(String cabecaProducao) {
 		simboloInicial = cabecaProducao;
 	}
-	
-	public void retiraSimboloInicialDasProducoesADireita(){
-		
-		HashSet<String> producoesIniciais = new HashSet<String>(producoes.get(simboloInicial));
-		
+
+	public void retiraSimboloInicialDasProducoesADireita() {
+
+		HashSet<String> producoesIniciais = new HashSet<String>(
+				producoes.get(simboloInicial));
+
 		producoesIniciais.remove("&");
 		String cabecaNovaProducao = produzNovoSimbolo();
-		
-		for(String prod : producoesIniciais){
+
+		for (String prod : producoesIniciais) {
 			adicionaProducao(cabecaNovaProducao, prod);
 		}
-		
+
 		for (String nt : simbolosNaoTerminais) {
-			ArrayList<String> transicoes = new ArrayList<String>(producoes.get(nt));
+			ArrayList<String> transicoes = new ArrayList<String>(
+					producoes.get(nt));
 
 			for (String t : transicoes) {
-				if(t.length()==2 && t.substring(1, 2).equals(simboloInicial)){
-					
-					String novaProducao = t.substring(0, 1) + cabecaNovaProducao;
-					
+				if (t.length() == 2 && t.substring(1, 2).equals(simboloInicial)) {
+
+					String novaProducao = t.substring(0, 1)
+							+ cabecaNovaProducao;
+
 					producoes.get(nt).remove(t);
 					producoes.get(nt).add(novaProducao);
-					
+
 				}
 			}
 
 		}
-		
+
 	}
-	
+
+	private String formataCabecaProducao(String cabeca) {
+
+		if (cabeca.length() == 1 && Character.isUpperCase(cabeca.charAt(0))) {
+			return cabeca;
+		}
+
+		else if (cabeca.length() == 2 && cabeca.substring(0, 1).equals("*")
+				&& Character.isUpperCase(cabeca.charAt(1))) {
+
+			cabeca = cabeca.substring(1, 2);
+
+			setSimboloInicial(cabeca);
+
+			return cabeca;
+		}
+
+		return null;
+
+	}
+
+	private boolean corpoDaProducaoEhValido(String corpo) {
+
+		if (corpo.equals("&") && simbolosTerminais.contains(corpo)) {
+			throw new ProducaoMalFormadaException(
+					"Já existe uma produção que deriva epsilon");
+		}
+
+		return (corpo.length() == 1 && !Character.isUpperCase(corpo.charAt(0)))
+				|| (corpo.length() == 2
+						&& !Character.isUpperCase(corpo.charAt(0)) && Character
+							.isUpperCase(corpo.charAt(1)));
+
+	}
 
 	public boolean adicionaProducao(String cabecaProducao, String corpoProducao) {
 
-		if (cabecaProducao.length() == 1
-				&& Character.isUpperCase(cabecaProducao.charAt(0))) {
+		cabecaProducao = formataCabecaProducao(cabecaProducao);
 
-			if (corpoProducao.equals("&")) {
+		if (cabecaProducao != null && corpoDaProducaoEhValido(corpoProducao)) {
 
-				if (simbolosTerminais.contains(corpoProducao)) {
-					throw new ProducaoMalFormadaException(
-							"Já existe uma produção que deriva epsilon");
-				}
-				
-				registraProducao(cabecaProducao, corpoProducao);
+			registraProducao(cabecaProducao, corpoProducao);
 
-				setSimboloInicial(cabecaProducao);
-
-				return true;
-
-			} else if (corpoProducao.length() == 1
-					&& !Character.isUpperCase(corpoProducao.charAt(0))) {
-				registraProducao(cabecaProducao, corpoProducao);
-
-				return true;
-
-			} else if (corpoProducao.length() == 2
-					&& !Character.isUpperCase(corpoProducao.charAt(0))
-					&& Character.isUpperCase(corpoProducao.charAt(1))) {
-
-				registraProducao(cabecaProducao, corpoProducao);
-				return true;
-			}
-
+			return true;
 		}
 
-		throw new ProducaoMalFormadaException("Produção inválida");
+		throw new ProducaoMalFormadaException("Produção " + cabecaProducao
+				+ " -> " + corpoProducao + " inválida");
 
 	}
 
@@ -141,8 +155,8 @@ public class Gramatica {
 			e1.printStackTrace();
 		}
 		automato.addEstadoFinal("qFinal");
-		
-		if(producoes.get(simboloInicial).contains("&")){
+
+		if (producoes.get(simboloInicial).contains("&")) {
 			automato.addEstadoFinal(simboloInicial);
 		}
 
@@ -159,7 +173,7 @@ public class Gramatica {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				} else if(t.length() == 2){
+				} else if (t.length() == 2) {
 					try {
 						automato.addTransicao(nt, t.substring(0, 1),
 								t.substring(1, 2));
@@ -174,42 +188,42 @@ public class Gramatica {
 
 		return automato;
 	}
-	
-	private boolean existeProducaoADireita(String simbolo){
-		
+
+	private boolean existeProducaoADireita(String simbolo) {
+
 		Set<String> naoTerminais = producoes.keySet();
 
 		for (String nt : naoTerminais) {
 			HashSet<String> transicoes = producoes.get(nt);
 
 			for (String t : transicoes) {
-				if(t.length()==2 && t.substring(1, 2).equals(simbolo)){
+				if (t.length() == 2 && t.substring(1, 2).equals(simbolo)) {
 					return true;
 				}
 			}
 
 		}
-		
+
 		return false;
-		
+
 	}
-	
-	public String produzNovoSimbolo(){
+
+	public String produzNovoSimbolo() {
 		char novoSimbolo = 'A';
 		boolean encontrouNovo = false;
-		
-		while(!encontrouNovo){		
-			
-			if(!simbolosNaoTerminais.contains(String.valueOf(novoSimbolo))){
+
+		while (!encontrouNovo) {
+
+			if (!simbolosNaoTerminais.contains(String.valueOf(novoSimbolo))) {
 				encontrouNovo = true;
-			}else{
+			} else {
 				novoSimbolo++;
-			}	
-			
+			}
+
 		}
-		
+
 		return String.valueOf(novoSimbolo);
-		
+
 	}
 
 	/*
@@ -227,7 +241,8 @@ public class Gramatica {
 		for (String nt : naoTerminais) {
 			HashSet<String> transicoes = producoes.get(nt);
 
-			res += (nt == getSimboloInicial()) ? "*"+nt + " -> " : nt + " -> ";
+			res += (nt == getSimboloInicial()) ? "*" + nt + " -> " : nt
+					+ " -> ";
 
 			for (String t : transicoes) {
 				res += t + " | ";

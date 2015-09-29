@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import formais152.Modelo.Gramatica;
 import formais152.Modelo.Excecoes.ProducaoMalFormadaException;
-import formais152.Modelo.Excecoes.SimboloQueProduzEpsilonADireitaException;
 
 /**
  * 
@@ -24,6 +23,8 @@ public class GramaticaTest {
 		Assert.assertEquals(true, gr.adicionaProducao("S", "0"));
 		Assert.assertEquals(true, gr.adicionaProducao("S", "(A"));
 		Assert.assertEquals(true, gr.adicionaProducao("S", "&"));
+		Assert.assertEquals(true, gr.adicionaProducao("*S", "e"));
+		Assert.assertEquals(true, gr.adicionaProducao("*S", "aA"));
 
 	}
 	
@@ -51,6 +52,24 @@ public class GramaticaTest {
 		Gramatica gr = new Gramatica();
 
 		Assert.assertEquals(true, gr.adicionaProducao("A", "aAa"));
+		
+	}
+	
+	@Test(expected=ProducaoMalFormadaException.class)
+	public void cabecaDaProducaoComSimboloInicialETresCaracteres(){
+		
+		Gramatica gr = new Gramatica();
+
+		Assert.assertEquals(true, gr.adicionaProducao("*AA", "a"));
+		
+	}
+	
+	@Test(expected=ProducaoMalFormadaException.class)
+	public void cabecaDaProducaoComAsteriscoEmOrdemInversa(){
+		
+		Gramatica gr = new Gramatica();
+
+		Assert.assertEquals(true, gr.adicionaProducao("A*", "a"));
 		
 	}
 	
