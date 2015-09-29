@@ -93,7 +93,9 @@ public class Expressao {
 				 * do automato atual com o restante da expressao
 				 */
 				String sub = express.substring(i + 1);
-
+				
+				auto.addEstadoFinal(lastEstate);
+				
 				return auto = auto.uniao( obterAutomato(sub, (char) 0) );
 			}
 			
@@ -153,7 +155,10 @@ public class Expressao {
 		String estadoInicial = "S0";
 		String estadoFinal = lastEstate;
 		
+		
 		try {	
+			auto.addEstadoFinal(lastEstate);
+			
 			switch(mod){
 				case '+':{
 					auto.addTransicao(estadoFinal , "&" ,  estadoInicial);
@@ -170,6 +175,7 @@ public class Expressao {
 				}
 	
 				default:{
+					
 					
 					break;
 				}	
