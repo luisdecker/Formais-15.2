@@ -66,5 +66,29 @@ public class InputOutput {
 		} 
     	return gr;
     }
+    
+    static public Expressao criarExpressao(String location){
+    	BufferedReader br = null;
+    	
+    	 String fullline= "";
+    	try {
+    		br= new BufferedReader(new FileReader(location));
+    		fullline = br.readLine();
+    		while(fullline != null){
+    			if(fullline.length()!=0){
+    				fullline=fullline.trim();
+    				return new Expressao(fullline);
+    			}
+    		}
+    	    
+
+    	   
+   
+    	    br.close();
+    	} catch (IOException e) {		
+			e.printStackTrace();
+		} 
+    	return null;
+    }
 
 }
