@@ -3,6 +3,7 @@ package formais152.Modelo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class InputOutput {
 	
@@ -10,6 +11,22 @@ public class InputOutput {
 		
 		return null;
 	}
+	 static private ArrayList<String> getParameters(String line2, String separator){
+	    	String line = line2;
+		    ArrayList<String> lista= new ArrayList<String>();
+	    	do{
+					String estate = line;
+					if(line.contains(separator)){
+						int pos=line.indexOf(separator);
+						estate = line.substring(0,pos );
+						line = line.substring( pos +1 );	
+					}
+					estate = estate.trim();
+					
+					lista.add(estate);
+				}while(line.contains(separator));
+	    	return lista;	
+	    }
 	
     static public Gramatica criarGramatica(String location){
     	BufferedReader br = null;
@@ -31,30 +48,11 @@ public class InputOutput {
     	        	 line= line.substring(position+2);
     	        	
     	        	vn=vn.trim();
-    	        	do{
-    	        		String vt= line.trim();
-    	        		
-    	        		if(line.contains("|")){
-    	        			int nextPosition=line.indexOf("|");
-    	        			
-    	        			
-    	        			vt= line.substring(0,nextPosition);
-    	        			
-    	        			line = line.substring( nextPosition +1 );	
-    	        		}
-    	        		vt = vt.trim();
-    	        		//limpando *
-    	        		if(vn.contains("*")){
-    	        			vn= vn.substring(1);
-    	        		}
-    	        		
-    	        		if(! (vn.length()==0 || vt.length()==0)){
-    	        			gr.adicionaProducao(vn,vt);
-    	        		}
-    	        		
-    	     	
-    	        	}while(line.contains("|"));
- 	
+    	        	ArrayList<String> lista= getParameters(line,"|");
+    	        	for(String vt: lista){
+    	        		gr.adicionaProducao(vn, vt);
+    	        	}    	        	
+ 
     	        }
     
     	        fullline =  br.readLine();
@@ -80,15 +78,81 @@ public class InputOutput {
     				return new Expressao(fullline);
     			}
     		}
-    	    
-
-    	   
-   
+    
     	    br.close();
     	} catch (IOException e) {		
 			e.printStackTrace();
 		} 
     	return null;
+    }
+   
+    static public Automato criarAutomato(String location){
+    	 String line= "";
+    	 Automato auto= new Automato();
+     	try {
+     		BufferedReader	br= new BufferedReader(new FileReader(location));
+     		line = br.readLine();
+     		
+     		if(line != null){
+     			if( !line.contains("Q") ) return null;
+     			int start= line.indexOf('[');
+     			int end= line.indexOf(']');
+     			if( start==-1 || end == -1)return null;
+     			
+     			String par= line.substring(start+1, end);
+     			
+     			ArrayList<String> lista= getParameters(line,",");
+	        	for(String estado: lista){
+	        		auto.addEstado(estado);
+	        	}    	 
+     		}
+     		line = br.readLine();
+     		
+     		if(line != null){
+     			if( !line.contains("q0") ) return null;
+     			int start= line.indexOf('=');
+     		
+     			if( start==-1)return null;
+     			
+     			String par= line.substring(start+1);
+  
+     			line= line.trim();
+	        	auto.setEstadoInicial(line);
+	        	
+	           	 
+     		}
+     		
+     		line = br.readLine();
+     		if(line != null){
+     			if( !line.contains("F") ) return null;
+     			int start= line.indexOf('[');
+     			int end= line.indexOf(']');
+     			if( start==-1 || end == -1)return null;
+     			
+     			String par= line.substring(start+1, end);
+     			
+     			ArrayList<String> lista= getParameters(line,",");
+	        	for(String estado: lista){
+	        		auto.addEstadoFinal(estado);
+	        	}    	 
+     		}
+     		line = br.readLine();
+     		
+     		//TODO leitura de parametros
+     		while(line != null){
+     			String sub= line;
+     		
+     		}
+     		
+     		
+     		
+     		
+
+     	    br.close();
+     	} catch (Exception e) {		
+ 			e.printStackTrace();
+ 		} 
+     	return null;
     }
 
 }
