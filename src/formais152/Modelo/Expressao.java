@@ -74,7 +74,7 @@ public class Expressao {
 				String sub = express.substring(i + 1, end);
 				
 				char submod = '\0';
-				if(end< express.length()-1 )
+				if(end < express.length()-1 )
 					submod = express.charAt(i + 1);
 
 				if (isMod(submod)) {
@@ -82,10 +82,25 @@ public class Expressao {
 				} else {
 					submod = 0;
 				}
-
+			
+				
+				auto.addEstadoFinal(lastEstate);
 				auto = auto.concatenacao(obterAutomato(sub, submod));
-				i = end - 1;
-				continue;
+				
+				end++;
+				if(end < express.length()){
+					if(express.charAt(end)=='|' ){
+						sub= express.substring(end+1);
+						return auto.uniao( obterAutomato(sub,'\0'));
+						
+					}else{
+						sub= express.substring(end);
+						return auto.concatenacao( obterAutomato(sub,'\0'));
+					}
+				}
+				
+				
+				
 			}
 			if (at == '|') {
 				/**
