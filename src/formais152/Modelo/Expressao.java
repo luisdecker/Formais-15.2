@@ -1,6 +1,11 @@
 package formais152.Modelo;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import formais152.Modelo.Excecoes.ParenteseMismatchException;
 
 public class Expressao {
 
@@ -10,30 +15,61 @@ public class Expressao {
 		expressao = exp.trim();
 
 	}
+	private String getInicial(Automato a) throws Exception{
+		Set<Estado> set= a.getEstados();
+		for(Estado e: set){
+			String nome=e.getNome();
+			if(e.isInicial())return e.getNome();
+		}
+		throw new Exception( "sem estado inicial");
+		
+	}
+	private String createNewEnd(Automato a ) throws Exception{
+		Set<Estado> set= a.getEstados();
+		ArrayList<String > names= new ArrayList<String >();
+		Set<Estado> finais = new HashSet<Estado>();
+		
+		for(Estado e: set){
+			if(e.isTerminal()) finais.add(e);
+			
+			names.add(e.getNome());
+		}
+		if(set.isEmpty())throw new Exception("Sem estado final");
+		
+		String nomeFinal="SS0";
+		int i=0;
+		while( names.contains(nomeFinal) ){
+			i++;
+			nomeFinal="SS";
+			nomeFinal+=i;
+		}
+		
+		a.addEstado(nomeFinal);
+		a.addEstadoFinal(nomeFinal);
+		
+		for(Estado e: finais){
+			a.addTransicao( e.getNome() , "&", nomeFinal);
+		}
+		
+		
+		return nomeFinal;
 
-	public Automato obterAutomato() {
+	}
+	
+
+	public Automato obterAutomato() throws Exception{
 		String express = expressao;
 		Automato auto = new Automato();
-		String result = "(";
+		String result = "";
+		
 		for (int i = 0; i < express.length(); i++) {
 			char at = express.charAt(i);
-			if (at == '|') {
-				result += ')';
-				result += at;
-				result += '(';
-			} else {
-				if (at == '(') {
-					result += '(';
-				}
-				if (at == ')') {
-					result += ')';
-				}
-				if (at != ' ')
-					result += at;
-			}
+			if (at != ' ') 
+				result+=at;
 		}
-		result += ')';
-		System.out.println(result);
+		
+		
+		
 		return obterAutomato(result,'\0');
 	}
 
@@ -54,6 +90,9 @@ public class Expressao {
 			e1.printStackTrace();
 		}
 		String lastEstate="S0";
+		String estadoInicial = "S0";
+		
+		String estadoFinal = lastEstate;
 		
 		for (int i = 0; i < express.length(); i++) {
 			char at = express.charAt(i);
@@ -64,18 +103,33 @@ public class Expressao {
 				 * 
 				 * tambem é verificado se tem um modificador depois
 				 */
-				
-				int end = express.indexOf(')', i);
-				if (end == -1) {
-					System.exit(-1);
+				int end = -1;
+				/**verificação de multiplos parenteses
+				 * 
+				 */
+				for(int j = i+1, cont = 1; j <express.length() ;j++){
+					char c= express.charAt(j);
+					if(c == ')'){
+						cont--;
+					}
+					if(cont==0){
+						end = j;
+						break;
+					}
+					if(c == '('){
+						cont++;
+					}
+				}
+				if( end == -1){
+					throw new ParenteseMismatchException("Parentese não encontrado");
 				}
 				
-				
+		
 				String sub = express.substring(i + 1, end);
 				
 				char submod = '\0';
 				if(end < express.length()-1 )
-					submod = express.charAt(i + 1);
+					submod = express.charAt(end + 1);
 
 				if (isMod(submod)) {
 					end++;
@@ -85,7 +139,13 @@ public class Expressao {
 			
 				
 				auto.addEstadoFinal(lastEstate);
-				auto = auto.concatenacao(obterAutomato(sub, submod));
+				
+				try {
+					auto= auto.concatenacao(obterAutomato(sub, submod));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				end++;
 				if(end < express.length()){
@@ -95,11 +155,27 @@ public class Expressao {
 						
 					}else{
 						sub= express.substring(end);
-						return auto.concatenacao( obterAutomato(sub,'\0'));
+						try {
+							return auto.concatenacao( obterAutomato(sub,'\0'));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 				
-				
+				if(isMod(mod)){
+					try{
+						estadoInicial = getInicial(auto);
+						estadoFinal= createNewEnd(auto);
+					}
+					catch(Exception e){
+						System.out.println(e.getMessage());
+					}
+					break;
+				}else{
+					return auto;
+				}
 				
 			}
 			if (at == '|') {
@@ -111,7 +187,21 @@ public class Expressao {
 				
 				auto.addEstadoFinal(lastEstate);
 				
-				return auto = auto.uniao( obterAutomato(sub, (char) 0) );
+				 auto = auto.uniao( obterAutomato(sub, (char) 0) );
+				 
+				 if(isMod(mod)){
+						try{
+							estadoInicial = getInicial(auto);
+							estadoFinal= createNewEnd(auto);
+						}
+						catch(Exception e){
+							System.out.println(e.getMessage());
+						}
+						break;
+					}else{
+						return auto;
+					}
+				 
 			}
 			
 			/**
@@ -119,7 +209,7 @@ public class Expressao {
 			 * do simbolo atual
 			 */
 			char cmod='\0';
-			if(i<express.length()+1)cmod=express.charAt( i+1 );
+			if(i<express.length()-1)cmod=express.charAt( i+1 );
 			
 			if(isMod(cmod))i++;
 			
@@ -161,16 +251,14 @@ public class Expressao {
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
+			estadoFinal = lastEstate;
 		}
 		
 		
 		/** Agora lidando com algum modificador que influencia em toda expressao
 		 * 
 		 */
-		String estadoInicial = "S0";
-		String estadoFinal = lastEstate;
-		
-		
+
 		try {	
 			auto.addEstadoFinal(lastEstate);
 			
