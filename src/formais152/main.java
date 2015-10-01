@@ -18,7 +18,8 @@ public class main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try {
+       /* try {
+            System.out.println("AAAAAAAAA");
             Automato a = new Automato();
             a.addSimbolo("a");
             a.addSimbolo("b");
@@ -49,15 +50,13 @@ public class main {
             System.out.println(d);
         } catch (Exception e) {
 
-        }
-        /*
+        }*/
+        
             
             
             
          Automato aut = new Automato();
 		
-         *testes rápidos que eu fiz, vou passar pro JUnit, pode ser apagado																																																																																																																						*/
-        /*
 
          aut.addEstado("S");
          aut.addEstado("A");
@@ -85,7 +84,7 @@ public class main {
 		
          Gramatica gr2 = aut.transformaEmGramatica();
          gr2.retiraSimboloInicialDasProducoesADireita();
-         //		System.out.println(gr2);
+         System.out.println(gr2);
 		
          System.out.println("\n");
 		
@@ -112,7 +111,7 @@ public class main {
 		
 		
 		
-         System.out.println(aut2);*/
+  //       System.out.println(aut2);
 //		System.out.println(gr);
 //		
 //		Automato aut2 = gr.transformaEmAutomato();

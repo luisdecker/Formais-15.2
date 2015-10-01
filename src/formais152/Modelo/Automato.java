@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
@@ -754,10 +753,16 @@ public class Automato implements Serializable {
                         if (eChegada.isTerminal()) {
 
                             gr.adicionaProducao(novoSimboloSaida, simbolo);
+                            
 
                         }
-                        gr.adicionaProducao(novoSimboloSaida, simbolo
-                                + novoSimboloChegada);
+                        
+                        if(!eChegada.isTerminal() || eChegada.getTransicoes().keySet().size()>0){
+                           gr.adicionaProducao(novoSimboloSaida, simbolo
+                                + novoSimboloChegada); 
+                        }
+                        
+                        
 
                     }
 

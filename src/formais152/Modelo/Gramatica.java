@@ -38,7 +38,8 @@ public class Gramatica {
 
 	public void retiraSimboloInicialDasProducoesADireita() {
 
-		HashSet<String> producoesIniciais = new HashSet<String>(
+                if(simbolosTerminais.contains("&")){
+                    HashSet<String> producoesIniciais = new HashSet<String>(
 				producoes.get(simboloInicial));
 
 		producoesIniciais.remove("&");
@@ -65,6 +66,10 @@ public class Gramatica {
 			}
 
 		}
+                }
+            
+            
+		
 
 	}
 
