@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import formais152.Modelo.Excecoes.EpsilonTransicaoException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Automato implements Serializable {
 
@@ -192,7 +194,7 @@ public class Automato implements Serializable {
         return estados;
     }
 
-    public Automato removerEpsilonTransicoes() throws Exception {
+    public Automato removerEpsilonTransicoes() {
         if (!possuiEpsilonTransicao()) {
             return this;
         }
@@ -204,7 +206,11 @@ public class Automato implements Serializable {
                 novo.addEstadoFinal(e.getNome());
             } else if (e.isInicial()) {
                 novo.addEstado(e.getNome());
-                novo.setEstadoInicial(e.getNome());
+                try {
+                    novo.setEstadoInicial(e.getNome());
+                } catch (Exception ex) {
+                    Logger.getLogger(Automato.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
                 novo.addEstado(e.getNome());
             }
@@ -223,7 +229,11 @@ public class Automato implements Serializable {
             for (String simbolo : e.getTransicoes().keySet()) {
                 for (Estado outro : e.getTransicoes().get(simbolo)) {
                     for (Estado fecho : outro.getEpsilonFecho()) {
-                        novo.addTransicao(e.getNome(), simbolo, fecho.getNome());
+                        try {
+                            novo.addTransicao(e.getNome(), simbolo, fecho.getNome());
+                        } catch (Exception ex) {
+                            Logger.getLogger(Automato.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
             }
@@ -345,6 +355,7 @@ public class Automato implements Serializable {
     public Automato obterComplemento() {
         Automato automato = new Automato();
         automato.alfabeto = alfabeto;
+
         automato = removerEpsilonTransicoes();
         if (!automato.isDeterministico()) {
             automato = automato.determinizar();
@@ -424,7 +435,7 @@ public class Automato implements Serializable {
         return uniao;
     }
 
-    public Automato interseccao(Automato automato) {
+    public Automato interseccao(Automato automato)  {
         // A1 intersec A2 = (!(!(A1 uniao A2))) = (!(!A1 uniao !A2))
         Set<String> uniaoAlfabeto = new HashSet<String>();
         uniaoAlfabeto.addAll(alfabeto);

@@ -1,8 +1,10 @@
 package formais152.Modelo;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class InputOutput {
@@ -27,6 +29,16 @@ public class InputOutput {
 			lista.add(estate);
 		} while (line.trim().length()>0);
 		return lista;
+	}
+	static public void writeToFile(String text, String location){
+		try {
+			PrintWriter out = new PrintWriter(location);
+			out.print(text);
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	static public Gramatica criarGramatica(String location) {
@@ -178,12 +190,9 @@ public class InputOutput {
 			while (line != null) {
 			
 				if( !line.trim().equals("") ){
-					int start = line.indexOf('(');
-					int end = line.indexOf(')');
 					
-					if(start == -1 || end == -1)return null;
 					
-					String par =  line.substring(start + 1, end);
+					String par =  line.trim();
 					ArrayList<String> lista = getParameters(par, ",");
 					if(lista.size()!= 3)return null;
 					auto.addTransicao(lista.get(0), lista.get(1), lista.get(2));
