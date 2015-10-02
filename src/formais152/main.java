@@ -6,6 +6,7 @@
 package formais152;
 
 import formais152.Modelo.Automato;
+import formais152.Modelo.Estado;
 import formais152.Modelo.Gramatica;
 
 /**
@@ -18,8 +19,8 @@ public class main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-       /* try {
-            System.out.println("AAAAAAAAA");
+
+        try {
             Automato a = new Automato();
             a.addSimbolo("a");
             a.addSimbolo("b");
@@ -48,9 +49,15 @@ public class main {
             System.out.println(b);
             Automato d = b.concatenacao(a);
             System.out.println(d);
-        } catch (Exception e) {
 
-        }*/
+            System.out.println("\n\nTestando remoção de &\n");
+            System.out.println(d.removerEpsilonTransicoes());
+            System.out.println("\n\n\n");
+            System.out.println(d.determinizar());
+        } catch (Exception e) {
+        }
+
+        /*
         
             
             
@@ -109,9 +116,8 @@ public class main {
 		
          Automato aut2 = gr.transformaEmAutomato();
 		
-		
-		
-  //       System.out.println(aut2);
+         */
+        //       System.out.println(aut2);
 //		System.out.println(gr);
 //		
 //		Automato aut2 = gr.transformaEmAutomato();
@@ -120,5 +126,4 @@ public class main {
 //		
 //		System.out.println(aut2.determinizar());
     }
-
 }

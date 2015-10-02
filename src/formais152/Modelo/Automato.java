@@ -192,57 +192,46 @@ public class Automato implements Serializable {
         return estados;
     }
 
-    public Automato removerEpsilonTransicoes() {
+    public Automato removerEpsilonTransicoes() throws Exception {
         if (!possuiEpsilonTransicao()) {
             return this;
         }
+
         Automato novo = new Automato();
-        novo.alfabeto = alfabeto;
-        novo.alfabeto.remove("&");
-        try {
-            for (Estado estado : estados) {
-                boolean terminal = estado.isTerminal();
-                novo.addEstado(estado.getNome());
-                for (Entry<String, List<Estado>> transicao : estado
-                        .getTransicoes().entrySet()) {
-                    if (transicao.getKey().equals("&")) {
-                        for (Estado filho : transicao.getValue()) {
-                            if (filho.isTerminal()) {
-                                terminal = true;
-                            }
-                            for (Entry<String, List<Estado>> transicaoFilho : filho
-                                    .getTransicoes().entrySet()) {
-                                String simbolo = transicaoFilho.getKey();
-                                for (Estado neto : transicaoFilho.getValue()) {
-                                    if (neto.isTerminal()) {
-                                        novo.addEstadoFinal(neto.getNome());
-                                    } else {
-                                        novo.addEstado(neto.getNome());
-                                    }
-                                    novo.addTransicao(estado.getNome(),
-                                            simbolo, neto.getNome());
-                                }
-                            }
-                        }
-                    } else {
-                        for (Estado filho : transicao.getValue()) {
-                            if (filho.isTerminal()) {
-                                novo.addEstadoFinal(filho.getNome());
-                            } else {
-                                novo.addEstado(filho.getNome());
-                            }
-                            novo.addTransicao(estado.getNome(),
-                                    transicao.getKey(), filho.getNome());
-                        }
+
+        for (Estado e : this.estados) {
+            if (e.isTerminal()) {
+                novo.addEstadoFinal(e.getNome());
+            } else if (e.isInicial()) {
+                novo.addEstado(e.getNome());
+                novo.setEstadoInicial(e.getNome());
+            } else {
+                novo.addEstado(e.getNome());
+            }
+        }//Adicionou os estados;
+        /*for (Estado e : this.estados) {
+         for (String simbolo : e.getTransicoes().keySet()) {
+         for (Estado outro : e.getTransicoes().get(simbolo)) {
+         novo.addTransicao(e.getNome(), simbolo, outro.getNome());
+         }
+         }
+         }//adicionou as transicoes*/
+        for (Estado e : this.estados) {
+            e.calculaEpsilonFecho();
+        }//calcula todos os &-fechos
+        for (Estado e : this.estados) {
+            for (String simbolo : e.getTransicoes().keySet()) {
+                for (Estado outro : e.getTransicoes().get(simbolo)) {
+                    for (Estado fecho : outro.getEpsilonFecho()) {
+                        novo.addTransicao(e.getNome(), simbolo, fecho.getNome());
                     }
                 }
-                novo.encontrarEstado(estado.getNome()).setTerminal(terminal);
             }
-            novo.setEstadoInicial(estadoInicial.getNome());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }//troca os estados pelos epsolon fecho deles
+        novo = novo.determinizar();
+        novo.alfabeto.remove("&");
         return novo;
+
     }
 
     public Set<Estado> obterEstadosAlcancaveis() {
@@ -753,16 +742,13 @@ public class Automato implements Serializable {
                         if (eChegada.isTerminal()) {
 
                             gr.adicionaProducao(novoSimboloSaida, simbolo);
-                            
 
                         }
-                        
-                        if(!eChegada.isTerminal() || eChegada.getTransicoes().keySet().size()>0){
-                           gr.adicionaProducao(novoSimboloSaida, simbolo
-                                + novoSimboloChegada); 
+
+                        if (!eChegada.isTerminal() || eChegada.getTransicoes().keySet().size() > 0) {
+                            gr.adicionaProducao(novoSimboloSaida, simbolo
+                                    + novoSimboloChegada);
                         }
-                        
-                        
 
                     }
 
