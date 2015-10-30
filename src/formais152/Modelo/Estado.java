@@ -1,6 +1,7 @@
 package formais152.Modelo;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,10 @@ public class Estado implements Comparable<Estado>, Serializable {
         super();
         this.nome = nome;
         this.terminal = terminal;
+    }
+
+    public void apagarTransicoes() {
+        transicoes.clear();
     }
 
     public List<Estado> getEpsilonFecho() {

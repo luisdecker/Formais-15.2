@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import formais152.Modelo.Excecoes.EpsilonTransicaoException;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -225,20 +226,53 @@ public class Automato implements Serializable {
         for (Estado e : this.estados) {
             e.calculaEpsilonFecho();
         }//calcula todos os &-fechos
+        /*for (Estado e : this.estados) {
+         for (String simbolo : e.getTransicoes().keySet()) {
+         for (Estado outro : e.getTransicoes().get(simbolo)) {
+         for (Estado fecho : outro.getEpsilonFecho()) {
+         try {
+         novo.addTransicao(e.getNome(), simbolo, fecho.getNome());
+         } catch (Exception ex) {
+         Logger.getLogger(Automato.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         }
+         }
+         }
+         }//troca os estados pelos epsolon fecho deles*/
+
+        HashMap<Estado, ArrayList<Estado>> eTransicoes = new HashMap<Estado, ArrayList<Estado>>();
         for (Estado e : this.estados) {
-            for (String simbolo : e.getTransicoes().keySet()) {
-                for (Estado outro : e.getTransicoes().get(simbolo)) {
-                    for (Estado fecho : outro.getEpsilonFecho()) {
-                        try {
-                            novo.addTransicao(e.getNome(), simbolo, fecho.getNome());
-                        } catch (Exception ex) {
-                            Logger.getLogger(Automato.class.getName()).log(Level.SEVERE, null, ex);
+            ArrayList<Estado> trans = new ArrayList<>();
+            eTransicoes.put(e, trans);
+        }
+
+        for (Estado e : this.estados) {
+            List<Estado> eTrans = eTransicoes.get(e);
+            Map<String, List<Estado>> transE = new TreeMap<>(e.getTransicoes());
+            Map<String, List<Estado>> transE1 = e.getTransicoes();
+            for (String simbolo : transE1.keySet()) {
+                if (!simbolo.equals("&")) {
+                    for (Estado outro : transE1.get(simbolo)) {
+                        e.remTransicao(simbolo, outro);
+                    }
+                    for (Estado eTransitado : eTrans) {
+                        for (Estado outroTrans : eTransitado.getTransicoes().get(simbolo)) {
+                            e.addTransicao(simbolo, outroTrans);
+
                         }
                     }
+                    for (Estado origTrans : transE.get(simbolo)) {
+                        e.addTransicao(simbolo, origTrans);
+                    }
                 }
+
             }
-        }//troca os estados pelos epsolon fecho deles
+        }
+
         novo = novo.determinizar();
+        for (Estado e : novo.estados) {
+            e.getTransicoes().remove("&");
+        }
         novo.alfabeto.remove("&");
         return novo;
 
@@ -435,7 +469,7 @@ public class Automato implements Serializable {
         return uniao;
     }
 
-    public Automato interseccao(Automato automato)  {
+    public Automato interseccao(Automato automato) {
         // A1 intersec A2 = (!(!(A1 uniao A2))) = (!(!A1 uniao !A2))
         Set<String> uniaoAlfabeto = new HashSet<String>();
         uniaoAlfabeto.addAll(alfabeto);
@@ -770,7 +804,7 @@ public class Automato implements Serializable {
 
                     if (estadoSaida.isTerminal()) {
                         gr.adicionaProducao(novoSimboloSaida, "&");
-
+                        gr.retiraSimboloInicialDasProducoesADireita();
                     }
 
                 }

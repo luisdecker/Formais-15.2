@@ -1,4 +1,4 @@
-package formais152.Modelo;
+/*package formais152.Modelo;
 
 import java.io.File;
 
@@ -19,4 +19,4 @@ public class SeletordeArquivo {
 		return path;
 	}
 
-}
+}*/

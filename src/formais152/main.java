@@ -13,143 +13,143 @@ import formais152.Modelo.Gramatica;
 import formais152.Modelo.InputOutput;
 
 public class main {
-	static String menu = "a) operações de automatos finito\nb) operações de expressão regular\nc) operações de gramaticas\n\nDigite a opção";
-	static String menuAutomato = "a)Ler automato\nb)determinizar\nc)Converter em gramatica\nd)Voltar";
-	static String menuExpressao = "a)Ler expressao\nb)transformar em Automato\nc)voltar";
-	static String menuGramatica = "a)Ler gramatica\nb)transformar em Automato\nc)voltar";
-	static Automato automato;
-	static Expressao expressao;
-	static Gramatica gramatica;
 
-	static void automato() {
-		String text="";
-		while(text.length()==0){
-			text = JOptionPane.showInputDialog(menuAutomato);
-		}
-		char option = text.charAt(0);
+    static String menu = "a) operaï¿½ï¿½es de automatos finito\nb) operaï¿½ï¿½es de expressï¿½o regular\nc) operaï¿½ï¿½es de gramaticas\n\nDigite a opï¿½ï¿½o";
+    static String menuAutomato = "a)Ler automato\nb)determinizar\nc)Converter em gramatica\nd)Voltar";
+    static String menuExpressao = "a)Ler expressao\nb)transformar em Automato\nc)voltar";
+    static String menuGramatica = "a)Ler gramatica\nb)transformar em Automato\nc)voltar";
+    static Automato automato;
+    static Expressao expressao;
+    static Gramatica gramatica;
 
-		switch (option) {
-		case 'a': {
-			automato = InputOutput.criarAutomato("automato.in");
-			break;
-		}
-		case 'b': {
-			automato = automato.removerEpsilonTransicoes();
-			automato = automato.determinizar();
-			automato = automato.obterAutomatoMinimo();
+    static void automato() {
+        String text = "";
+        while (text.length() == 0) {
+            text = JOptionPane.showInputDialog(menuAutomato);
+        }
+        char option = text.charAt(0);
 
-			InputOutput.writeToFile(automato.toString(), "automato.out");
-			System.out.println(automato.toString());
-			break;
-		}
-		case 'c': {
-			gramatica = automato.transformaEmGramatica();
-			InputOutput.writeToFile(gramatica.toString(), "gramatica.out");
-			System.out.println(gramatica.toString());
+        switch (option) {
+            case 'a': {
+                automato = InputOutput.criarAutomato("/home/decker/formais/automato.in");
+                System.out.println(automato.toString());
+                break;
+            }
+            case 'b': {
+                automato = automato.removerEpsilonTransicoes();
+                automato = automato.determinizar();
 
-			break;
-		}
-		case 'd': {
-			main(null);
-			return;
-		}
-		default:
-			break;
-		}
-		automato();
+                InputOutput.writeToFile(automato.toString(), "/home/decker/formais/automato.out");
+                System.out.println("\n\n\n" + automato.toString());
+                break;
+            }
+            case 'c': {
+                gramatica = automato.transformaEmGramatica();
+                InputOutput.writeToFile(gramatica.toString(), "/home/decker/formais/gramatica.out");
+                System.out.println(gramatica.toString());
 
-	}
+                break;
+            }
+            case 'd': {
+                main(null);
+                return;
+            }
+            default:
+                break;
+        }
+        automato();
 
-	static void expressao() {
-		String text="";
-		while(text.length()==0){
-			text = JOptionPane.showInputDialog(menuExpressao);
-		}
-		char option = text.charAt(0);
->>>>>>> master
-		
-		switch (option) {
-		case 'a': {
-			expressao = InputOutput.criarExpressao("expressao.in");
-			break;
-		}
-		case 'b': {
-			try {
-				automato = expressao.obterAutomato();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			InputOutput.writeToFile(automato.toString(), "automato.out");
-			System.out.println(automato.toString());
+    }
 
-			break;
-		}
-		case 'c': {
-			 main(null);
-			 return;
-			
-		}
-		default:
-			break;
-		}
+    static void expressao() {
+        String text = "";
+        while (text.length() == 0) {
+            text = JOptionPane.showInputDialog(menuExpressao);
+        }
+        char option = text.charAt(0);
 
-		expressao();
-	}
+        switch (option) {
+            case 'a': {
+                expressao = InputOutput.criarExpressao("/home/decker/formais/expressao.in");
+                break;
+            }
+            case 'b': {
+                try {
+                    automato = expressao.obterAutomato();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                InputOutput.writeToFile(automato.toString(), "/home/decker/formais/automato.out");
+                System.out.println(automato.toString());
 
-	static void gramatica() {
-		String text="";
-		while(text.length()==0){
-			text = JOptionPane.showInputDialog(menuGramatica);
-		}
-		char option = text.charAt(0);
-		
-		switch (option) {
-		case 'a': {
-			gramatica = InputOutput.criarGramatica("gramatica.in");
-			break;
-		}
-		case 'b': {
-			automato = gramatica.transformaEmAutomato();
-			InputOutput.writeToFile(automato.toString(), "automato.out");
-			System.out.println(automato.toString());
-			break;
-		}
-		case 'c': {
-			main(null);
-			return;
-		}
-		default:
-			break;
-		}
-		gramatica();
+                break;
+            }
+            case 'c': {
+                main(null);
+                return;
 
-	}
+            }
+            default:
+                break;
+        }
 
-	public static void main(String[] args) {
-		String text="";
-		while(text.length()==0){
-			text = JOptionPane.showInputDialog(menu);
-		}
-		char option = text.charAt(0);
-		switch (option) {
-		case 'a': {
-			automato();
-			break;
-		}
-		case 'b': {
-			expressao();
-			break;
-		}
-		case 'c': {
-			gramatica();
-			break;
-		}
+        expressao();
+    }
 
-		default:
-			break;
-		}
+    static void gramatica() {
+        String text = "";
+        while (text.length() == 0) {
+            text = JOptionPane.showInputDialog(menuGramatica);
+        }
+        char option = text.charAt(0);
 
-	}
+        switch (option) {
+            case 'a': {
+                gramatica = InputOutput.criarGramatica("/home/decker/formais/gramatica.in");
+                break;
+            }
+            case 'b': {
+                automato = gramatica.transformaEmAutomato();
+                InputOutput.writeToFile(automato.toString(), "/home/decker/formais/automato.out");
+                System.out.println(automato.toString());
+                break;
+            }
+            case 'c': {
+                main(null);
+                return;
+            }
+            default:
+                break;
+        }
+        gramatica();
+
+    }
+
+    public static void main(String[] args) {
+        String text = "";
+        while (text.length() == 0) {
+            text = JOptionPane.showInputDialog(menu);
+        }
+        char option = text.charAt(0);
+        switch (option) {
+            case 'a': {
+                automato();
+                break;
+            }
+            case 'b': {
+                expressao();
+                break;
+            }
+            case 'c': {
+                gramatica();
+                break;
+            }
+
+            default:
+                break;
+        }
+
+    }
 
 }

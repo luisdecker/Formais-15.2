@@ -50,7 +50,7 @@ public class InputOutput {
 
 			String fullline = br.readLine();
 
-			// /inicio da criação
+			// /inicio da criao
 			while (fullline != null) {
 				String line = fullline;
 
